@@ -14,5 +14,4 @@ import java.time.LocalDateTime;
 public class LoginResponseDto {
     String username;
     LocalDateTime create_at;
-    Boolean state;
 }

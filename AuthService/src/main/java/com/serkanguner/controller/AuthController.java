@@ -3,18 +3,16 @@ package com.serkanguner.controller;
 import com.serkanguner.constant.EndPoints;
 import com.serkanguner.dto.request.LoginRequestDto;
 import com.serkanguner.dto.request.RegisterRequestDto;
-import com.serkanguner.dto.response.LoginResponseDto;
 import com.serkanguner.dto.response.RegisterResponseDto;
 import com.serkanguner.entity.Auth;
-import com.serkanguner.exception.AuthMicroServiceException;
-import com.serkanguner.exception.ErrorType;
 import com.serkanguner.mapper.AuthMapper;
 import com.serkanguner.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -27,7 +25,7 @@ public class AuthController {
      * Register İşlemleri:
      */
     @PostMapping(EndPoints.REGISTER)
-    public ResponseEntity<RegisterResponseDto> register(@RequestBody RegisterRequestDto dto) {
+    public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto dto) {
         Auth auth = authService.save(dto);
         return ResponseEntity.ok(AuthMapper.INSTANCE.authToDto(auth)) ;
     }

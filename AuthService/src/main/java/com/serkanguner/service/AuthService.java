@@ -1,46 +1,48 @@
 package com.serkanguner.service;
 
+import com.serkanguner.constant.Status;
 import com.serkanguner.dto.request.LoginRequestDto;
 import com.serkanguner.dto.request.RegisterRequestDto;
-import com.serkanguner.dto.response.LoginResponseDto;
 import com.serkanguner.entity.Auth;
-import com.serkanguner.exception.AuthMicroServiceException;
+import com.serkanguner.exception.AuthServiceException;
 import com.serkanguner.exception.ErrorType;
 import com.serkanguner.mapper.AuthMapper;
 import com.serkanguner.repository.AuthRepository;
 import com.serkanguner.utility.JwtTokenManager;
-import com.serkanguner.utility.TokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AuthRepository authRepository;
-    private final TokenManager tokenManager;
     private final JwtTokenManager jwtTokenManager;
 
     public Auth save(RegisterRequestDto dto) {
         if (!dto.getPassword().equals(dto.getRepassword())) {
-            throw new AuthMicroServiceException(ErrorType.PASSWORD_AND_REPASSWORD_NOT_EQUALS);
+            throw new AuthServiceException(ErrorType.PASSWORD_AND_REPASSWORD_NOT_EQUALS);
         }
         if (authRepository.existsByUsername(dto.getUsername())) {
-            throw new AuthMicroServiceException(ErrorType.USERNAME_ALREADY_TAKEN);
+            throw new AuthServiceException(ErrorType.USERNAME_ALREADY_TAKEN);
+        }
+        if (!dto.getEmail().endsWith("gmail.com")){
+
+        }
+        if (authRepository.existsByEmail(dto.getEmail())) {
+            throw new AuthServiceException(ErrorType.EMAIL_ALREADY_TAKEN);
         }
         Auth auth = AuthMapper.INSTANCE.dtoToAuth(dto);
-//        auth.setCreateAt(LocalDateTime.now());
-//        auth.setState(true);
+        auth.setStatus(Status.ACTIVE);
+
         return authRepository.save(auth);
     }
 
     public Auth findOptionalByUsernameAndPassword(String username, String password) {
         return authRepository.findOptionalByUsernameAndPassword(username,
                         password)
-                .orElseThrow(() -> new AuthMicroServiceException(ErrorType.USERNAME_OR_PASSWORD_WRONG));
+                .orElseThrow(() -> new AuthServiceException(ErrorType.USERNAME_OR_PASSWORD_WRONG));
     }
 
 
@@ -66,8 +68,8 @@ public class AuthService {
         idFromToken = jwtTokenManager
                 .getIdFromToken(token)
                 .orElseThrow(() ->
-                        new AuthMicroServiceException(ErrorType.INVALID_TOKEN));
-        authRepository.findById(idFromToken).orElseThrow(() -> new AuthMicroServiceException(ErrorType.INVALID_TOKEN));
+                        new AuthServiceException(ErrorType.INVALID_TOKEN));
+        authRepository.findById(idFromToken).orElseThrow(() -> new AuthServiceException(ErrorType.INVALID_TOKEN));
 
         return authRepository.findAll();
 

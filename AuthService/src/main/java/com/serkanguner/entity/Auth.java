@@ -1,14 +1,14 @@
 package com.serkanguner.entity;
 
+import com.serkanguner.constant.Role;
+import com.serkanguner.constant.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CurrentTimestamp;
-
-import java.time.LocalDateTime;
 
 
 @NoArgsConstructor
@@ -23,6 +23,10 @@ public class Auth extends BaseEntity {
     Long id;
     @Column(unique = true)
     String username;
+    @Size(min = 3,max = 8)
     String password;
+    @Email(message = "@gmail.com")
+    String email;
+
 
 }

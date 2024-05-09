@@ -1,5 +1,6 @@
 package com.serkanguner.dto.response;
 
+import com.serkanguner.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 public class RegisterResponseDto {
     String username;
+    Status status;
     LocalDateTime create_at;
 
 

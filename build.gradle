@@ -1,19 +1,67 @@
+// ROOT build.gradle dosyasi : Bu dosya ile proje altinda bulunan modullere dependecieslerin yonetimi saglanmaya calisilmaktadir.
+
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '3.2.5'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'application'
+    id 'java-library'
 }
 
-group = 'com.serkanguner'
-version = '1.0-SNAPSHOT'
+//allprojects: Kok dizin ve onun altindaki dizinlerden bahsediyoruz
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'application'
+    apply plugin: 'java-library'
+    apply from: "${rootDir}/dependencies.gradle"
 
-repositories {
-    mavenCentral()
+}
+//subprojects: Sadece alttaki modullerden bahsediyoruz.
+subprojects {
+    group = 'com.serkangnr'
+    version = 'v0.0.1'
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+
+    //Turkce sorunu olmamasi icin :
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+    }
+
+    buildscript {
+        dependencies {
+            classpath("org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}")
+        }
+    }
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 
-test {
-    useJUnitPlatform()
+    dependencies {
+        implementation libs.springBootWeb
+        compileOnly libs.lombok
+        annotationProcessor libs.lombok
+        implementation libs.openapi
+        implementation libs.mapstruct
+        annotationProcessor libs.mapstructProcessor
+        implementation libs.jwt
+        implementation libs.validation
+    }
+
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+    }
+
+}
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }

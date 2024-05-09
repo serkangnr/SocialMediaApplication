@@ -4,15 +4,15 @@ import lombok.Getter;
 
 
 @Getter
-public class AuthMicroServiceException extends RuntimeException {
+public class AuthServiceException extends RuntimeException {
     private ErrorType errorType;
 
-    public AuthMicroServiceException(ErrorType errorType){
+    public AuthServiceException(ErrorType errorType){
         super(errorType.getMessage());
         this.errorType = errorType;
     }
 
-    public AuthMicroServiceException(ErrorType errorType, String customMessage){
+    public AuthServiceException(ErrorType errorType, String customMessage){
         super(customMessage);
         this.errorType = errorType;
     }

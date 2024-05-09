@@ -6,13 +6,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.serkanguner.exception.AuthMicroServiceException;
+import com.serkanguner.exception.AuthServiceException;
 import com.serkanguner.exception.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -45,9 +43,9 @@ public class JwtTokenManager {
                     .sign(Algorithm.HMAC512(secretKey));
             return Optional.of(token);
         } catch (IllegalArgumentException e) {
-            throw new AuthMicroServiceException(ErrorType.TOKEN_CREATION_FAILED);
+            throw new AuthServiceException(ErrorType.TOKEN_CREATION_FAILED);
         } catch (JWTCreationException e) {
-            throw new AuthMicroServiceException(ErrorType.TOKEN_CREATION_FAILED);
+            throw new AuthServiceException(ErrorType.TOKEN_CREATION_FAILED);
         }
 
     }
@@ -68,9 +66,9 @@ public class JwtTokenManager {
 //            return Optional.of(id);
 //
 //        } catch (IllegalArgumentException e) {
-//            throw new AuthMicroServiceException((ErrorType.TOKEN_ARGUMENT_NOTVALID));
+//            throw new AuthServiceException((ErrorType.TOKEN_ARGUMENT_NOTVALID));
 //        } catch (JWTVerificationException e) {
-//            throw new AuthMicroServiceException(ErrorType.TOKEN_VERIFY_FAILED);
+//            throw new AuthServiceException(ErrorType.TOKEN_VERIFY_FAILED);
 //        }
 //
 //    }
@@ -90,9 +88,9 @@ public class JwtTokenManager {
             return Optional.of(id);
 
         } catch (IllegalArgumentException e) {
-            throw new AuthMicroServiceException((ErrorType.TOKEN_ARGUMENT_NOTVALID));
+            throw new AuthServiceException((ErrorType.TOKEN_ARGUMENT_NOTVALID));
         } catch (JWTVerificationException e) {
-            throw new AuthMicroServiceException(ErrorType.TOKEN_VERIFY_FAILED);
+            throw new AuthServiceException(ErrorType.TOKEN_VERIFY_FAILED);
         }
     }
 }

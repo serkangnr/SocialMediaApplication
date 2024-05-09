@@ -13,6 +13,7 @@ public interface AuthRepository extends JpaRepository<Auth,Long> {
      * @return
      */
     Boolean existsByUsername(String username);
+    Boolean existsByEmail(String email);
     /**
      * username ve password vt'da kayıtlı mı kontrolü yapar.
      */
