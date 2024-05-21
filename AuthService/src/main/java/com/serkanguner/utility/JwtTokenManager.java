@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.serkanguner.constant.Role;
 import com.serkanguner.exception.AuthServiceException;
 import com.serkanguner.exception.ErrorType;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,28 @@ public class JwtTokenManager {
 
     }
 
+    public Optional<String> createDoubleToken(Long id, Role role){
+        String doubleToken = "";
+        try {
+            doubleToken = JWT.create()
+                    .withClaim("id", id)
+                    .withClaim("role", role.toString())
+                    .withClaim("whichpage", "AuthMicroService")
+                    .withClaim("ders", "Java JWT")
+                    .withClaim("group", "Java14")
+                    .withIssuer("Java14")
+                    .withIssuedAt(new Date()) // Tokenin yaratildigi an
+                    .withExpiresAt(new Date(System.currentTimeMillis() + expireTime))
+                    .sign(Algorithm.HMAC512(secretKey));
+            return Optional.of(doubleToken);
+        } catch (IllegalArgumentException e) {
+            throw new AuthServiceException(ErrorType.TOKEN_CREATION_FAILED);
+        } catch (JWTCreationException e) {
+            throw new AuthServiceException(ErrorType.TOKEN_CREATION_FAILED);
+        }
+
+    }
+
 
     //2. Token Dogrulanmali
 //    public Optional<Long> verifyToken(String token) {
@@ -86,6 +109,26 @@ public class JwtTokenManager {
             Long id = decodedJWT.getClaim("id").asLong();
 
             return Optional.of(id);
+
+        } catch (IllegalArgumentException e) {
+            throw new AuthServiceException((ErrorType.TOKEN_ARGUMENT_NOTVALID));
+        } catch (JWTVerificationException e) {
+            throw new AuthServiceException(ErrorType.TOKEN_VERIFY_FAILED);
+        }
+    }
+
+    public Optional<Role> getRoleFromToken(String token){
+        try {
+            Algorithm algorithm = Algorithm.HMAC512(secretKey);
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+
+            if (decodedJWT==null) {
+                return Optional.empty();
+            }
+            String role = decodedJWT.getClaim("role").asString();
+
+            return Optional.of(Role.valueOf(role));
 
         } catch (IllegalArgumentException e) {
             throw new AuthServiceException((ErrorType.TOKEN_ARGUMENT_NOTVALID));

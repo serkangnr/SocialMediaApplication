@@ -1,0 +1,16 @@
+server:
+  port: 9092
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27027
+      database: SocialMediaUserProfileDB
+      username: serkan
+      password: serkan32
+
+authservice:
+  secret:
+    secret-key: ${JAVA14_SECRET_KEY}
+    issuer: ${JAVA14_ISSUER}

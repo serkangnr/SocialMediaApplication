@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -23,10 +24,17 @@ public class Auth extends BaseEntity {
     Long id;
     @Column(unique = true)
     String username;
-    @Size(min = 3,max = 8)
+    @Size(min = 3, max = 8)
     String password;
     @Email(message = "@gmail.com")
     String email;
+    String activationCode;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    Role role = Role.USER;
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    Status status = Status.PENDING;
 
 
 }

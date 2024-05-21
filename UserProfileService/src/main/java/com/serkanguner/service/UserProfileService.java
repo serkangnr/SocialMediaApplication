@@ -1,0 +1,112 @@
+package com.serkanguner.service;
+
+import com.serkanguner.constant.Status;
+import com.serkanguner.dto.request.*;
+import com.serkanguner.entity.UserProfile;
+import com.serkanguner.exception.ErrorType;
+import com.serkanguner.exception.UserServiceException;
+import com.serkanguner.manager.AuthManager;
+import com.serkanguner.manager.PostManager;
+import com.serkanguner.mapper.UserProfileMapper;
+import com.serkanguner.repository.UserProfileRepository;
+import com.serkanguner.utility.JwtTokenManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class UserProfileService {
+    private final UserProfileRepository userProfileRepository;
+    private final JwtTokenManager jwtTokenManager;
+    private final AuthManager authManager;
+    private final PostManager postManager;
+
+    @RabbitListener(queues = "q.A")
+    public void save(UserProfileSaveRequestDto dto) {
+        userProfileRepository.save(UserProfileMapper.INSTANCE.dtoToUserProfile(dto));
+//        userProfileRepository.save(UserProfile.builder()
+//                .username(dto.getUsername())
+//                .email(dto.getEmail())
+//                .authId(dto.getAuthId())
+//                .build());
+    }
+
+    public void update(UserProfileUpdateRequestDto dto) {
+        /*
+        Guncelleme isleminde oncelikle kayit getirilir.
+         */
+       UserProfile userProfile = userProfileRepository.findById(dto.getId())
+                .orElseThrow(()->new  UserServiceException(ErrorType.INVALID_USER_ID));
+
+       // bu adimda hata firlatmiyorsa userprofile olusmustur.
+        //Artik dto icinden gelen bilgileri bu userprofile'in ilgili alanlarini set eder.
+        userProfile.setAbout(dto.getAbout());
+        userProfile.setPhoto(dto.getPhoto());
+        userProfile.setPhone(dto.getPhone());
+        //gerekli islemler tamamlandiktan sonra repository ile save metodu ile guncelleme yapacagiz.
+        // save metodu eger icinde id varsa guncelleme , yoksa ekleme yapar
+        userProfileRepository.save(userProfile);
+
+    }
+
+
+
+    public Boolean activateUserProfile(Long authId) {
+        UserProfile userProfile = userProfileRepository.findByAuthId(authId)
+                .orElseThrow(() -> new UserServiceException(ErrorType.INVALID_USERPROFILE_ID));
+        userProfile.setStatus(Status.ACTIVE);
+        userProfileRepository.save(userProfile);
+        if (!userProfile.getStatus().equals(Status.ACTIVE)) {
+            throw new UserServiceException(ErrorType.USERPROFILE_UPDATE_STATUS_FAILED);
+        }
+        return true;
+    }
+
+
+    @Transactional
+    public void updateUserProfile(UserProfileUpdateRequestDto dto) {
+        Long authId =
+                jwtTokenManager.getIdFromToken(dto.getToken())
+                        .orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
+
+        UserProfile userProfile = userProfileRepository.findByAuthId(authId)
+                .orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
+        if (dto.getEmail() != null) {
+            userProfile.setEmail(dto.getEmail());
+            //authda da değişmeli.
+            authManager.updateEmail(authId,dto);
+        }
+        if (dto.getPhone() != null) {
+            userProfile.setPhone(dto.getPhone());
+        }
+        if (dto.getPhoto() != null) {
+            userProfile.setPhoto(dto.getPhoto());
+        }
+        if (dto.getAddress() != null) {
+            userProfile.setAddress(dto.getAddress());
+        }
+        if (dto.getAbout() != null) {
+            userProfile.setAbout(dto.getAbout());
+        }
+        userProfileRepository.save(userProfile);
+    }
+
+    public void delete(Long authId){
+        UserProfile userProfile = userProfileRepository.findByAuthId(authId)
+                .orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
+        userProfile.setStatus(Status.DELETED);
+        userProfileRepository.save(userProfile);
+    }
+
+    public String getUserIdToken(Long authId) {
+        UserProfile userProfile = userProfileRepository.findByAuthId(authId).orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
+        return jwtTokenManager.createTokenForUserId(authId,userProfile.getId()).orElseThrow(() -> new UserServiceException(ErrorType.INVALID_TOKEN));
+    }
+
+
+
+
+
+}

@@ -26,10 +26,7 @@ public class BaseEntity {
     LocalDateTime createAt;
     @UpdateTimestamp
     LocalDateTime updateAt;
-    @Enumerated(EnumType.STRING)
-    Role role;
-    @Enumerated(EnumType.STRING)
-    Status status;
+
 
 
 }

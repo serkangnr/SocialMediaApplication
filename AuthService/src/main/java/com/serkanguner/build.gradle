@@ -1,6 +1,0 @@
-package com.serkanguner
-
-dependencies {
-    implementation libs.springBootDataJpa
-    runtimeOnly libs.postgresql
-}

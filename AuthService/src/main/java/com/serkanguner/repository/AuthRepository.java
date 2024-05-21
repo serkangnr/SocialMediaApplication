@@ -1,5 +1,6 @@
 package com.serkanguner.repository;
 
+import com.serkanguner.constant.Role;
 import com.serkanguner.entity.Auth;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,7 +18,13 @@ public interface AuthRepository extends JpaRepository<Auth,Long> {
     /**
      * username ve password vt'da kayıtlı mı kontrolü yapar.
      */
-    Optional<Auth> findOptionalByUsernameAndPassword(String username,String password);
+    Optional<Auth> findOptionalByEmailAndPassword(String username,String password);
+
+    boolean findByActivationCode(String activationCode);
+
+    Optional<Auth> findByRole(Role role);
+
+
 
     //password ve repassword kontrolu yapin
     //Boolean existsByPasswordAndRepassword(String password,String repassword);

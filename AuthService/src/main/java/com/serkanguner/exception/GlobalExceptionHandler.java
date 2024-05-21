@@ -10,27 +10,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.ArrayList;
 import java.util.List;
 
-//Bu sinif tum controller siniflari icin merkezi bir sekilde hata yonetimmi saglayacaktir.
+
+
+// Bu sınıf tüm controller sınıfları için merkezi bir şekilde hata yönetimi sağlayacaktır.
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(RuntimeException.class) // RuntimeException Hata yakalayici bir metod oldugunu belirtmek icin.
-    public ResponseEntity<String> handleException(){
-        return ResponseEntity.badRequest().body("Uygulamada Runtime Exception Olustu...........");
+
+    @ExceptionHandler(RuntimeException.class)// RuntimeException Hata yakalayıcı bir metod olduğunu belirtmek için.
+    public ResponseEntity<String> handleException(RuntimeException ex) {
+        System.err.println(ex.getMessage());
+        return ResponseEntity.badRequest()
+                .body("Uygulamada RunTime Exception oluştu................" + ex.getMessage());
     }
 
 
     @ExceptionHandler(AuthServiceException.class)
-    public ResponseEntity<ErrorMessage> handleDemoException(AuthServiceException authServiceException){
-        ErrorType errorType = authServiceException.getErrorType();
-
-        return new ResponseEntity(createErrorMessage(authServiceException),errorType.getHttpStatus());
-    }
-
-    private ErrorMessage createErrorMessage(AuthServiceException authServiceException) {
-       return ErrorMessage.builder()
-               .code(authServiceException.getErrorType().getCode())
-               .message(authServiceException.getMessage())
-               .build();
+    public ResponseEntity<ErrorMessage> handleDemoException(AuthServiceException ex) {
+        ErrorType errorType = ex.getErrorType();
+        return new ResponseEntity(createErrorMessage(ex,
+                errorType),
+                errorType.getHttpStatus());
     }
 
     private ErrorMessage createErrorMessage(Exception ex, ErrorType errorType) {
@@ -56,7 +55,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage,
                 errorType.getHttpStatus());
     }
-
 
 
 }

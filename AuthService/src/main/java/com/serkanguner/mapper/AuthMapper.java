@@ -1,7 +1,7 @@
 package com.serkanguner.mapper;
 
-import com.serkanguner.dto.request.LoginRequestDto;
-import com.serkanguner.dto.request.RegisterRequestDto;
+import com.serkanguner.dto.request.*;
+import com.serkanguner.dto.response.ActivationResponseDto;
 import com.serkanguner.dto.response.LoginResponseDto;
 import com.serkanguner.dto.response.RegisterResponseDto;
 import com.serkanguner.entity.Auth;
@@ -15,11 +15,17 @@ public interface AuthMapper {
 
     AuthMapper INSTANCE = Mappers.getMapper(AuthMapper.class);
 
-    @Mapping(target = "create_at",source = "auth.createAt")
+
     RegisterResponseDto authToDto(Auth auth);
     Auth dtoToAuth(RegisterRequestDto dto);
 
-    @Mapping(target = "create_at",source = "auth.createAt")
     LoginResponseDto loginToDto(Auth auth);
-    Auth dtoToLogin(LoginRequestDto dto);
+
+    ActivationResponseDto activationToDto(Auth auth);
+
+
+    @Mapping(source = "id", target = "authId")
+    UserProfileSaveRequestDto toUserSaveRequestDto(Auth auth);
+
+
 }

@@ -1,5 +1,7 @@
 package com.serkanguner.dto.response;
 
+import com.serkanguner.constant.Role;
+import com.serkanguner.constant.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 public class LoginResponseDto {
+    Long id;
     String username;
-    LocalDateTime create_at;
+    String email;
+    Role role;
+    Status status;
+
 }

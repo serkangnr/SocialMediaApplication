@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class RegisterResponseDto {
     String username;
     Status status;
-    LocalDateTime create_at;
 
 
 }
