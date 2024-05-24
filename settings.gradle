@@ -4,4 +4,7 @@ include 'UserProfileService'
 include 'ConfigServer'
 include 'ConfigServerGit'
 include 'PostService'
+include 'GatewayService'
+include 'MailService'
+
 

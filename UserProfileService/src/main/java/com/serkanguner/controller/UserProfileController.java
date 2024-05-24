@@ -1,6 +1,7 @@
 package com.serkanguner.controller;
 
 import com.serkanguner.constant.EndPoints;
+import com.serkanguner.constant.Status;
 import com.serkanguner.dto.request.*;
 import com.serkanguner.entity.UserProfile;
 import com.serkanguner.mapper.UserProfileMapper;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -47,6 +50,14 @@ public class UserProfileController {
     @GetMapping("/getUserIdToken")
     String getUserIdToken(@RequestParam(name = "AuthId") Long authId){
         return userProfileService.getUserIdToken(authId);
+    }
+    @GetMapping("/findbyusername")
+    public ResponseEntity<List<UserProfile>> findByUsername(@RequestParam(name = "username") String username){
+        return ResponseEntity.ok(userProfileService.getUserProfileByUsername(username));
+    }
+    @GetMapping("/findbystatus")
+    public ResponseEntity<List<UserProfile>> findByStatus(@RequestParam(name = "status") Status status){
+        return ResponseEntity.ok(userProfileService.getUserProfileByStatus(status));
     }
 
 

@@ -10,10 +10,15 @@ import com.serkanguner.manager.PostManager;
 import com.serkanguner.mapper.UserProfileMapper;
 import com.serkanguner.repository.UserProfileRepository;
 import com.serkanguner.utility.JwtTokenManager;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,25 +27,32 @@ public class UserProfileService {
     private final JwtTokenManager jwtTokenManager;
     private final AuthManager authManager;
     private final PostManager postManager;
+    private final RedisTemplate<String, UserProfile> redisTemplate;
+    private final RedisTemplate<String, UserProfileSaveRequestRedisDto> redisTemplateRedisDto;
+
+    private static final String KEY = "UserProfileList";
 
     @RabbitListener(queues = "q.A")
     public void save(UserProfileSaveRequestDto dto) {
         userProfileRepository.save(UserProfileMapper.INSTANCE.dtoToUserProfile(dto));
-//        userProfileRepository.save(UserProfile.builder()
-//                .username(dto.getUsername())
-//                .email(dto.getEmail())
-//                .authId(dto.getAuthId())
-//                .build());
+
+        UserProfileSaveRequestRedisDto requestRedisDto = UserProfileSaveRequestRedisDto.builder()
+                .username(dto.getUsername())
+                .email(dto.getEmail())
+                .authId(dto.getAuthId()).build();
+
+
+        redisTemplateRedisDto.opsForList().rightPush(KEY, requestRedisDto);
     }
 
     public void update(UserProfileUpdateRequestDto dto) {
         /*
         Guncelleme isleminde oncelikle kayit getirilir.
          */
-       UserProfile userProfile = userProfileRepository.findById(dto.getId())
-                .orElseThrow(()->new  UserServiceException(ErrorType.INVALID_USER_ID));
+        UserProfile userProfile = userProfileRepository.findById(dto.getId())
+                .orElseThrow(() -> new UserServiceException(ErrorType.INVALID_USER_ID));
 
-       // bu adimda hata firlatmiyorsa userprofile olusmustur.
+        // bu adimda hata firlatmiyorsa userprofile olusmustur.
         //Artik dto icinden gelen bilgileri bu userprofile'in ilgili alanlarini set eder.
         userProfile.setAbout(dto.getAbout());
         userProfile.setPhoto(dto.getPhoto());
@@ -50,7 +62,6 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
 
     }
-
 
 
     public Boolean activateUserProfile(Long authId) {
@@ -76,7 +87,7 @@ public class UserProfileService {
         if (dto.getEmail() != null) {
             userProfile.setEmail(dto.getEmail());
             //authda da değişmeli.
-            authManager.updateEmail(authId,dto);
+            authManager.updateEmail(authId, dto);
         }
         if (dto.getPhone() != null) {
             userProfile.setPhone(dto.getPhone());
@@ -93,7 +104,7 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
-    public void delete(Long authId){
+    public void delete(Long authId) {
         UserProfile userProfile = userProfileRepository.findByAuthId(authId)
                 .orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
         userProfile.setStatus(Status.DELETED);
@@ -102,11 +113,35 @@ public class UserProfileService {
 
     public String getUserIdToken(Long authId) {
         UserProfile userProfile = userProfileRepository.findByAuthId(authId).orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
-        return jwtTokenManager.createTokenForUserId(authId,userProfile.getId()).orElseThrow(() -> new UserServiceException(ErrorType.INVALID_TOKEN));
+        return jwtTokenManager.createTokenForUserId(authId, userProfile.getId()).orElseThrow(() -> new UserServiceException(ErrorType.INVALID_TOKEN));
+    }
+
+    // repository ile findbUsername
+    public UserProfile getUserProfileListByUsername(String username) {
+        return userProfileRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
+    }
+
+    @PostConstruct
+    private void init() {
+        if (!redisTemplate.hasKey(KEY)) {
+            List<UserProfile> allUserProfile = userProfileRepository.findAll();
+            allUserProfile.forEach(userProfile -> redisTemplate.opsForList().rightPush(KEY,
+                    userProfile));
+        }
+    }
+    //ada gore cache uzerinden arama
+    public List<UserProfile> getUserProfileByUsername(String username) {
+        return findAllCache().stream().filter(userProfile -> userProfile.getUsername().equals(username)).collect(Collectors.toList());
+    }
+
+    private List<UserProfile> findAllCache() {
+        return redisTemplate.opsForList().range(KEY,0,-1);
     }
 
 
-
+    public List<UserProfile> getUserProfileByStatus(Status status) {
+        return findAllCache().stream().filter(userProfile -> userProfile.getStatus().equals(status)).collect(Collectors.toList());
+    }
 
 
 }

@@ -28,6 +28,7 @@ public class AuthService {
     private final UserProfileManager userProfileManager;
     private final RabbitTemplate rabbitTemplate;
 
+
     @Transactional
     public Auth save(RegisterRequestDto dto) {
         if (!dto.getPassword().equals(dto.getRepassword())) {
@@ -46,13 +47,18 @@ public class AuthService {
 
         UserProfileSaveRequestDto userProfileSaveRequestDto = UserProfileSaveRequestDto.builder()
                 .authId(auth.getId())
-                .email(auth.getEmail())
-                .username(auth.getUsername())
+                .email(auth.getEmail().toLowerCase())
+                .username(auth.getUsername().toLowerCase())
                 .build();
+
+        InfoDto info = InfoDto.builder()
+                .email(userProfileSaveRequestDto.getEmail().toLowerCase())
+                .activationCode(auth.getActivationCode()).build();
 
 
         //userProfileManager.save(userProfileSaveRequestDto);
-        rabbitTemplate.convertAndSend("exchange.direct", "Routing.A", userProfileSaveRequestDto);
+         rabbitTemplate.convertAndSend("exchange.direct", "Routing.A", userProfileSaveRequestDto);
+        rabbitTemplate.convertAndSend("exchange.direct", "Routing.B", info);
         return auth;
     }
 
@@ -175,7 +181,6 @@ public class AuthService {
     }
 
 
-
     public String softDelete(Long authId) {
         Auth auth = authRepository.findById(authId)
                 .orElseThrow(() -> new AuthServiceException(ErrorType.ACCOUNT_NOT_FOUND));
@@ -212,5 +217,27 @@ public class AuthService {
         authRepository.save(auth);
         return true;
 
+    }
+
+    public String sifremiUnuttum(String email){
+        String generateNewPasswordCode = CodeGenerator.generateNewPasswordCode();
+
+        InfoDto info = InfoDto.builder()
+                .email(email)
+                .activationCode(generateNewPasswordCode)
+                .build();
+
+        rabbitTemplate.convertAndSend("exchange.direct", "Routing.C", info);
+        return "Sifrenizi yenileme kodunuz "+email+ " adresine gonderilmistir.";
+    }
+
+    public Boolean updatePassword(Long authId, UpdatePasswordDto dto){
+        Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(ErrorType.ACCOUNT_NOT_FOUND));
+        auth.setPassword(dto.getNewPassword());
+        authRepository.save(auth);
+
+
+        //rabbitTemplate.convertAndSend("exchange.direct", "Routing.C", info);
+        return true;
     }
 }

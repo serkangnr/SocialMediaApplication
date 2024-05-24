@@ -9,12 +9,14 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 @Document // MongoDB icin document kullanilmasi gerekli
-public class UserProfile {
+public class UserProfile  {
     @MongoId
     String id;
     Long authId;

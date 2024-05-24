@@ -15,9 +15,18 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     //1.adim kuyruklari olusturduk.
+
     @Bean
     Queue queueA(){
         return new Queue("q.A");
+    }
+    @Bean
+    Queue queueB(){
+        return new Queue("q.B");
+    }
+    @Bean
+    Queue queueC(){
+        return new Queue("q.C");
     }
 
 
@@ -26,6 +35,7 @@ public class RabbitMQConfig {
     DirectExchange exchange(){
         return new DirectExchange("exchange.direct");
     }
+
 
     //3.adim bingind olusturma
     @Bean
@@ -37,7 +47,7 @@ public class RabbitMQConfig {
 
     }
     @Bean
-    Binding bindingB(Queue queueB, DirectExchange exchange){
+    Binding bindingMail(Queue queueB, DirectExchange exchange){
         return BindingBuilder
                 .bind(queueB)
                 .to(exchange)

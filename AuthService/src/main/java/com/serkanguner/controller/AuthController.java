@@ -2,10 +2,7 @@ package com.serkanguner.controller;
 
 import com.serkanguner.constant.EndPoints;
 import com.serkanguner.constant.Role;
-import com.serkanguner.dto.request.ActivationRequestDto;
-import com.serkanguner.dto.request.LoginRequestDto;
-import com.serkanguner.dto.request.RegisterRequestDto;
-import com.serkanguner.dto.request.UserProfileUpdateRequestDto;
+import com.serkanguner.dto.request.*;
 import com.serkanguner.dto.response.ActivationResponseDto;
 import com.serkanguner.dto.response.LoginResponseDto;
 import com.serkanguner.dto.response.RegisterResponseDto;
@@ -98,5 +95,17 @@ public class AuthController {
     public ResponseEntity<Role> getRoleFromToken(String token) {
         return ResponseEntity.ok(authService.getRoleFromToken(token));
     }
-
+    @PutMapping("/forgetpassword/{authId}")
+    public ResponseEntity<String> forgetPassword(@PathVariable Long authId,@RequestBody UpdatePasswordDto dto) {
+        ResponseEntity<Boolean> ok = ResponseEntity.ok(authService.updatePassword(authId, dto));
+        if (!ok.equals(ResponseEntity.ok())) {
+            return ResponseEntity.ok("Şifreniz Guncellenmistir");
+        }
+        return ResponseEntity.ok("Şifreniz Değiştirilememiştir");
+    }
+    @GetMapping("/sifremiunuttum")
+    public ResponseEntity<String> sifremiUnuttum(String email) {
+        ResponseEntity.ok(authService.sifremiUnuttum(email));
+        return ResponseEntity.ok("Sifrenizi onaylamak icin forgetpassword bolumune gidiniz.") ;
+    }
 }

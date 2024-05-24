@@ -21,6 +21,19 @@ public class CodeGenerator {
 
     }
 
+    public static String generateNewPasswordCode(){
+        String uuid = UUID.randomUUID().toString();
+
+        String[] split = uuid.split("-");
+
+        StringBuilder activationCodeBuilder = new StringBuilder();
+
+        for (String s : split) {
+            activationCodeBuilder.append(s.charAt(0));
+        }
+        return activationCodeBuilder.toString();
+    }
+
 
 
 

@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserProfileRepository extends MongoRepository<UserProfile, String> {
     Optional<UserProfile> findByAuthId(Long authId);
+    Optional<UserProfile> findByUsernameIgnoreCase(String username);
 }
