@@ -31,18 +31,24 @@ public class UserProfileService {
     private final RedisTemplate<String, UserProfileSaveRequestRedisDto> redisTemplateRedisDto;
 
     private static final String KEY = "UserProfileList";
+    private static final String KEY_REDIS = "UserProfileListRedis";
 
     @RabbitListener(queues = "q.A")
     public void save(UserProfileSaveRequestDto dto) {
         userProfileRepository.save(UserProfileMapper.INSTANCE.dtoToUserProfile(dto));
 
-        UserProfileSaveRequestRedisDto requestRedisDto = UserProfileSaveRequestRedisDto.builder()
-                .username(dto.getUsername())
+//        UserProfileSaveRequestRedisDto requestRedisDto = UserProfileSaveRequestRedisDto.builder()
+//                .username(dto.getUsername())
+//                .email(dto.getEmail())
+//                .authId(dto.getAuthId()).build();
+
+        UserProfile userProfile = UserProfile.builder().username(dto.getUsername())
                 .email(dto.getEmail())
-                .authId(dto.getAuthId()).build();
+                .authId(dto.getAuthId())
+                .build();
 
 
-        redisTemplateRedisDto.opsForList().rightPush(KEY, requestRedisDto);
+        redisTemplate.opsForList().rightPush(KEY, userProfile);
     }
 
     public void update(UserProfileUpdateRequestDto dto) {
@@ -129,13 +135,15 @@ public class UserProfileService {
                     userProfile));
         }
     }
+
     //ada gore cache uzerinden arama
     public List<UserProfile> getUserProfileByUsername(String username) {
+
         return findAllCache().stream().filter(userProfile -> userProfile.getUsername().equals(username)).collect(Collectors.toList());
     }
 
     private List<UserProfile> findAllCache() {
-        return redisTemplate.opsForList().range(KEY,0,-1);
+        return redisTemplate.opsForList().range(KEY, 0, -1);
     }
 
 
