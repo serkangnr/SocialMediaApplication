@@ -6,7 +6,7 @@ spring:
     host: smtp.mail.yahoo.com
     port: 587
     username: serkan.guner@yahoo.com
-    password: hqik yqbk oeff xyhg
+    password: ${password}
     properties:
       mail:
         smtp:
