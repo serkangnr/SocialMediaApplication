@@ -12,6 +12,7 @@ import com.serkanguner.mapper.AuthMapper;
 import com.serkanguner.repository.AuthRepository;
 import com.serkanguner.utility.CodeGenerator;
 import com.serkanguner.utility.JwtTokenManager;
+import com.serkanguner.utility.lowercase.LowercaseProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -37,11 +38,13 @@ public class AuthService {
         if (authRepository.existsByUsername(dto.getUsername())) {
             throw new AuthServiceException(ErrorType.USERNAME_ALREADY_TAKEN);
         }
-        if (authRepository.existsByEmail(dto.getEmail())) {
+        if (authRepository.existsByEmail(dto.getEmail().toLowerCase())) {
             throw new AuthServiceException(ErrorType.EMAIL_ALREADY_TAKEN);
         }
         Auth auth = AuthMapper.INSTANCE.dtoToAuth(dto);
         auth.setActivationCode(CodeGenerator.generateActivationCode());
+        auth.setUsername(dto.getUsername().toLowerCase());
+
 
         auth = authRepository.save(auth);
 
@@ -57,7 +60,7 @@ public class AuthService {
 
 
         //userProfileManager.save(userProfileSaveRequestDto);
-         rabbitTemplate.convertAndSend("exchange.direct", "Routing.A", userProfileSaveRequestDto);
+        rabbitTemplate.convertAndSend("exchange.direct", "Routing.A", userProfileSaveRequestDto);
         rabbitTemplate.convertAndSend("exchange.direct", "Routing.B", info);
         return auth;
     }
@@ -219,7 +222,7 @@ public class AuthService {
 
     }
 
-    public String sifremiUnuttum(String email){
+    public String sifremiUnuttum(String email) {
         String generateNewPasswordCode = CodeGenerator.generateNewPasswordCode();
 
         InfoDto info = InfoDto.builder()
@@ -228,16 +231,18 @@ public class AuthService {
                 .build();
 
         rabbitTemplate.convertAndSend("exchange.direct", "Routing.C", info);
-        return "Sifrenizi yenileme kodunuz "+email+ " adresine gonderilmistir.";
+        return "Sifrenizi yenileme kodunuz " + email + " adresine gonderilmistir.";
     }
 
-    public Boolean updatePassword(Long authId, UpdatePasswordDto dto){
+    public Boolean updatePassword(Long authId, UpdatePasswordDto dto) {
         Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(ErrorType.ACCOUNT_NOT_FOUND));
-        auth.setPassword(dto.getNewPassword());
-        authRepository.save(auth);
-
-
+        if (auth.getEmail().equals(dto.getEmail())) {
+            auth.setPassword(dto.getNewPassword());
+            authRepository.save(auth);
+            return true;
+        }
+        new AuthServiceException(ErrorType.EMAIL_OR_PASSWORD_WRONG);
         //rabbitTemplate.convertAndSend("exchange.direct", "Routing.C", info);
-        return true;
+        return false;
     }
 }

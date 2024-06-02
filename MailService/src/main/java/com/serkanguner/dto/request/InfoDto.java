@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class InfoDto {
     String email;
     String activationCode;
+
+
 }

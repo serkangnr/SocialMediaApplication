@@ -1,13 +1,16 @@
 package com.serkanguner.dto.request;
 
 import com.serkanguner.constant.Role;
+import com.serkanguner.utility.lowercase.Lowercase;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.FieldNameConstants;
+
+import java.util.Locale;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,4 +27,6 @@ public class RegisterRequestDto {
     @Size(min = 3, max = 8)
     String password;
     String repassword;
+
+
 }

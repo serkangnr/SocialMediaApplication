@@ -2,6 +2,7 @@ package com.serkanguner.entity;
 
 import com.serkanguner.constant.Role;
 import com.serkanguner.constant.Status;
+import com.serkanguner.utility.lowercase.Lowercase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;

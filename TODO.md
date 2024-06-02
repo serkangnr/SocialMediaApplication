@@ -1,5 +1,8 @@
 ## SOCIAL MEDIA APPLICATION
 
+
+
+
 ## Yapilacak Listesi
 * Dependency Management icin gerekli ayarlamalar yapilmali 👍
 * Projede kullanacagimiz surumler onceki proje ile ayni olsun. 👍

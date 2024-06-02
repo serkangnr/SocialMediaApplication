@@ -43,6 +43,7 @@ public class UserProfileService {
 //                .authId(dto.getAuthId()).build();
 
         UserProfile userProfile = UserProfile.builder().username(dto.getUsername())
+
                 .email(dto.getEmail())
                 .authId(dto.getAuthId())
                 .build();
@@ -110,6 +111,7 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
     }
 
+
     public void delete(Long authId) {
         UserProfile userProfile = userProfileRepository.findByAuthId(authId)
                 .orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
@@ -150,6 +152,7 @@ public class UserProfileService {
     public List<UserProfile> getUserProfileByStatus(Status status) {
         return findAllCache().stream().filter(userProfile -> userProfile.getStatus().equals(status)).collect(Collectors.toList());
     }
+
 
 
 }

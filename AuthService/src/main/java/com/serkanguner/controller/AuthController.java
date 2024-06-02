@@ -97,11 +97,13 @@ public class AuthController {
     }
     @PutMapping("/forgetpassword/{authId}")
     public ResponseEntity<String> forgetPassword(@PathVariable Long authId,@RequestBody UpdatePasswordDto dto) {
-        ResponseEntity<Boolean> ok = ResponseEntity.ok(authService.updatePassword(authId, dto));
-        if (!ok.equals(ResponseEntity.ok())) {
+        ResponseEntity<Boolean> responseEntity = ResponseEntity.ok(authService.updatePassword(authId, dto));
+        if (!responseEntity.equals(false)) {
             return ResponseEntity.ok("Şifreniz Guncellenmistir");
+        }else {
+            return ResponseEntity.ok("Şifreniz Guncellenememistir");
         }
-        return ResponseEntity.ok("Şifreniz Değiştirilememiştir");
+
     }
     @GetMapping("/sifremiunuttum")
     public ResponseEntity<String> sifremiUnuttum(String email) {

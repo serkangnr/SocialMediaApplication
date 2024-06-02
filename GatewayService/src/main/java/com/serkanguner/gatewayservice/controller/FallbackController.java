@@ -1,4 +1,4 @@
-package com.serkanguner.gatewayservice;
+package com.serkanguner.gatewayservice.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +13,12 @@ public class FallbackController {
     public ResponseEntity<String> getFallbackAuth(){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server hatasi");
     }
-    @GetMapping("/auth")
+    @GetMapping("/userprofile")
     public ResponseEntity<String> getFallbackUser(){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User hatasi");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("UserService is not responding");
     }
-    @GetMapping("/auth")
+    @GetMapping("/post")
     public ResponseEntity<String> getFallbackPost(){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Post hatasi");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("PostService is not responding");
     }
 }
