@@ -112,3 +112,13 @@ docker run --name java14MongoDB -d -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_
    Mesaj dönüşümü (message conversion) nedir ve RabbitMQ'da nasıl uygulanır?
    MongoDB nedir ve SQL tabanlı veritabanlarından farkları nelerdir? MongoDB'nin temel bileşenlerini açıklayınız (koleksiyon, doküman vs..)
    https://www.cloudamqp.com/blog/part1-rabbitmq-for-beginners-what-is-rabbitmq.html
+
+## Todo List 10 05.06.2024
+1. Security
+2. AuthService'de Register, ActivateCode, Sifremi unuttum. ve login endpointleri herkesin kullanimina acik olmali. Diger endpointler authenticate olmayi istemeli
+3. JWTTokenfilter custom filter'ini olusturunuz.
+4. AuthControllerda findall endpointine rolu sadece user olanlar istek atabilsin.
+5. AuthControllerde delete endpointine rolu sadece ADMIN olanlar istek atabilsin.
+6. UserController icinde security kuralim.
+7. UserServicede'ki Swagger ve findall disindaki tum endpointlere istek kapatilsin.
+8. 

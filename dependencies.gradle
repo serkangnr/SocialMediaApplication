@@ -18,6 +18,7 @@ ext {
     libs = [
             springBootWeb                   : "org.springframework.boot:spring-boot-starter-web:$versions.springBoot",
             springBootDataJpa               : "org.springframework.boot:spring-boot-starter-data-jpa:$versions.springBoot",
+            springBootSecurity              : "org.springframework.boot:spring-boot-starter-security:$versions.springBoot",
             springMail                      : "org.springframework.boot:spring-boot-starter-mail:$versions.springBoot",
             springRedis                      : "org.springframework.boot:spring-boot-starter-data-redis:$versions.springBoot",
             springBootDataElascticSearch            : "org.springframework.boot:spring-boot-starter-data-elasticsearch:$versions.springBoot",
