@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final RabbitTemplate rabbitTemplate;
 
     /**
      * Register İşlemleri:
@@ -51,8 +51,9 @@ public class AuthController {
     }
 
     @GetMapping(EndPoints.FINDALL)
-    public ResponseEntity<List<Auth>> findAll(String token) {
-        return ResponseEntity.ok(authService.findAll(token));
+    @PreAuthorize("hasAnyAuthority('USER')")
+    public ResponseEntity<List<Auth>> findAll() {
+        return ResponseEntity.ok(authService.findAll());
 
     }
     @GetMapping("/findall2")
@@ -68,6 +69,7 @@ public class AuthController {
     }
 
     @DeleteMapping(EndPoints.SOFTDELETE+"/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<String> softDeleteAccount(@PathVariable("id") Long authId) {
         ResponseEntity.ok(authService.softDelete(authId));
         return ResponseEntity.ok("Hesap Silinmiştir");

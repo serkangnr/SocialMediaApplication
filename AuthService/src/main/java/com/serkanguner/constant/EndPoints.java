@@ -12,6 +12,7 @@ public class EndPoints {
 
     //entities:
     public static final String AUTH=ROOT+"/auth";
+    public static final String YETKI=ROOT+"/yetki";
 
     //methods:
     public static final String REGISTER="/register";

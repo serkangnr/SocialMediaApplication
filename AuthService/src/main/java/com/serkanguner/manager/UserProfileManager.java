@@ -15,6 +15,6 @@ public interface UserProfileManager {
     ResponseEntity<Boolean> activateUserProfile(@PathVariable Long authId);
 
     @DeleteMapping("/delete/{authId}")
-    public ResponseEntity<Boolean> deleteUserProfile(@PathVariable Long authId);
+     ResponseEntity<Boolean> deleteUserProfile(@PathVariable Long authId);
 
 }

@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
     }
 
     private ErrorMessage createErrorMessage(Exception ex, ErrorType errorType) {
+        System.out.println("Tum hatalar: " + ex.getMessage());
         return ErrorMessage.builder()
                 .code(errorType.getCode())
                 .message(errorType.getMessage())

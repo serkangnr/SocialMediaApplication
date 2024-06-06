@@ -6,9 +6,3 @@ spring:
     import: "configserver:"
   application:
     name: application-auth
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: user
-    password: password
-

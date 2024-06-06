@@ -1,4 +1,4 @@
-package com.serkanguner.config;
+package com.serkanguner.config.rabbit;
 
 
 import org.springframework.amqp.core.Binding;

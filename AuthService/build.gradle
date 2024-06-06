@@ -4,4 +4,5 @@ dependencies {
     implementation libs.springCloudOpenFeign
     implementation libs.springCloudConfigClient
     implementation libs.springRabbit
+    implementation libs.springBootSecurity
 }

@@ -18,6 +18,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -103,7 +104,7 @@ public class AuthService {
     }
 
 
-    public List<Auth> findAll(String token) {
+/*    public List<Auth> findAll(String token) {
         Long idFromToken = null;
 
         idFromToken = jwtTokenManager
@@ -112,6 +113,10 @@ public class AuthService {
                         new AuthServiceException(ErrorType.INVALID_TOKEN));
         authRepository.findById(idFromToken).orElseThrow(() -> new AuthServiceException(ErrorType.INVALID_TOKEN));
 
+        return authRepository.findAll();
+
+    }*/
+    public List<Auth> findAll() {
         return authRepository.findAll();
 
     }
@@ -244,5 +249,20 @@ public class AuthService {
         new AuthServiceException(ErrorType.EMAIL_OR_PASSWORD_WRONG);
         //rabbitTemplate.convertAndSend("exchange.direct", "Routing.C", info);
         return false;
+    }
+
+    public Auth findbyId(Long authid) {
+        Auth auth = authRepository.findById(authid).orElseThrow(() -> new AuthServiceException(ErrorType.ACCOUNT_NOT_FOUND));
+        return auth;
+
+    }
+
+    public List<Auth> findAllById(Long authId) {
+        List<Auth> authList = new ArrayList<>();
+        Auth auth = authRepository.findById(authId).orElseThrow(() -> new AuthServiceException(ErrorType.ACCOUNT_NOT_FOUND));
+        if (auth != null) {
+            authList.add(auth);
+        }
+        return authList;
     }
 }

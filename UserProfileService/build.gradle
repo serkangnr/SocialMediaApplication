@@ -4,5 +4,6 @@ dependencies {
     implementation libs.springCloudConfigClient
     implementation libs.springRabbit
     implementation libs.springRedis
+    implementation libs.springBootSecurity
 
 }
