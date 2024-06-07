@@ -112,6 +112,7 @@ public class UserProfileService {
     }
 
 
+    @RabbitListener(queues = "q.Delete")
     public void delete(Long authId) {
         UserProfile userProfile = userProfileRepository.findByAuthId(authId)
                 .orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
@@ -153,6 +154,13 @@ public class UserProfileService {
         return findAllCache().stream().filter(userProfile -> userProfile.getStatus().equals(status)).collect(Collectors.toList());
     }
 
+    public List<UserProfile> findAll(){
+        return userProfileRepository.findAll();
+    }
 
 
+    public UserProfile findByAuthId(Long authid) {
+        UserProfile userProfile = userProfileRepository.findByAuthId(authid).orElseThrow(() -> new UserServiceException(ErrorType.USER_NOT_FOUND));
+        return userProfile;
+    }
 }

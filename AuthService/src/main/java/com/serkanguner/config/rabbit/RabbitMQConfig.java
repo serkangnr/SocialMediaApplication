@@ -29,6 +29,11 @@ public class RabbitMQConfig {
         return new Queue("q.C");
     }
 
+    @Bean
+    Queue queueDelete(){
+        return new Queue("q.Delete");
+    }
+
 
     //2.adim Exchange olusturalim
     @Bean
@@ -60,6 +65,14 @@ public class RabbitMQConfig {
                 .bind(queueC)
                 .to(exchange)
                 .with("Routing.C");
+
+    }
+    @Bean
+    Binding bindingDelete(Queue queueDelete, DirectExchange exchange){
+        return BindingBuilder
+                .bind(queueDelete)
+                .to(exchange)
+                .with("Routing.Delete");
 
     }
 

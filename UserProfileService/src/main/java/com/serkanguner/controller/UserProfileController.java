@@ -59,6 +59,10 @@ public class UserProfileController {
     public ResponseEntity<List<UserProfile>> findByStatus(@RequestParam(name = "status") Status status){
         return ResponseEntity.ok(userProfileService.getUserProfileByStatus(status));
     }
+    @GetMapping(EndPoints.FINDALL)
+    public ResponseEntity<List<UserProfile>> findAll(){
+        return ResponseEntity.ok(userProfileService.findAll());
+    }
 
 
 

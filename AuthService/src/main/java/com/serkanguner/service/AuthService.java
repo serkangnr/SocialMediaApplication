@@ -197,7 +197,8 @@ public class AuthService {
         }
         auth.setStatus(Status.DELETED);
         authRepository.save(auth);
-        userProfileManager.deleteUserProfile(authId);
+        rabbitTemplate.convertAndSend("exchange.direct","Routing.Delete",authId);
+        //userProfileManager.deleteUserProfile(authId);
         return authId + " idli kullanıcı silindi.";
     }
 
